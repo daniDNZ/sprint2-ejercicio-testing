@@ -1,7 +1,7 @@
 
 interface IRoom {
   name: string,
-  bookings: Array<Booking>,
+  bookings: Booking[],
   rate: number,
   discount: number
 }
@@ -17,7 +17,7 @@ interface IBooking {
 
 class Room implements IRoom {
   name: string;
-  bookings: Array<Booking>;
+  bookings: Booking[];
   rate: number;
   discount: number;
 
@@ -28,10 +28,10 @@ class Room implements IRoom {
     this.discount = room.discount;
   }
 
-  dateRange(startDate: string, endDate: string): Array<string> {
+  dateRange(startDate: string, endDate: string): string[] {
     let start: Date = new Date(startDate)
     const end: Date = new Date(endDate)
-    let dateRange: Array<string> = []
+    let dateRange: string[] = []
 
     while (start <= end) {
       dateRange = [...dateRange, start.toISOString()]
@@ -55,7 +55,7 @@ class Room implements IRoom {
   }
 
   occupancyPercentage(startDate: string, endDate: string): number {
-    const dateRange: Array<string> = this.dateRange(startDate, endDate)
+    const dateRange: string[] = this.dateRange(startDate, endDate)
     let daysOccuped: number = 0;
 
     dateRange.forEach(date => {
@@ -85,7 +85,7 @@ class Booking implements IBooking {
 
   getFee(): number {
     const totalDiscount: number = this.discount + this.room.discount
-    const dateRange: Array<string> = this.room.dateRange(this.checkin, this.checkout)
+    const dateRange: string[] = this.room.dateRange(this.checkin, this.checkout)
     const totalPrice: number = dateRange.length * this.room.rate
     const priceWithDiscount: number = (totalPrice - ((totalDiscount / 100) * totalPrice));
 
@@ -93,7 +93,7 @@ class Booking implements IBooking {
   }
 }
 
-function totalOccupancyPercentage(rooms: Array<Room>, startDate: string, endDate: string): number {
+function totalOccupancyPercentage(rooms: Room[], startDate: string, endDate: string): number {
   let totalOccupancyPercentage: number = 0
   rooms.forEach(room => {
     totalOccupancyPercentage += room.occupancyPercentage(startDate, endDate) / rooms.length
@@ -102,8 +102,8 @@ function totalOccupancyPercentage(rooms: Array<Room>, startDate: string, endDate
   return Math.round(totalOccupancyPercentage)
 }
 
-function availableRooms(rooms: Array<Room>, startDate: string, endDate: string): Array<Room> | false {
-  const arrAvailableRooms: Array<Room> = []
+function availableRooms(rooms: Room[], startDate: string, endDate: string): Room[] | false {
+  const arrAvailableRooms: Room[] = []
   rooms.forEach(room => {
     if (room.occupancyPercentage(startDate, endDate) === 0) {
       arrAvailableRooms.push(room)
